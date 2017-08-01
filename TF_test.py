@@ -1,4 +1,4 @@
-#import matplotlib.pyplot as plt
+
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -12,7 +12,7 @@ import random
 import os
 import xlwt,xlrd
 
-# This code was adapted from a tutorial found online, able to recognise cats from dogs.
+# This code was modified from a tutorial
 # http://cv-tricks.com/tensorflow-tutorial/training-convolutional-neural-network-for-image-classification/
 
 # Not many elements were changed, apart from:
@@ -87,45 +87,6 @@ print("Size of:")
 print("- Training-set:\t\t{}".format(len(data.train.labels)))
 print("- Test-set:\t\t{}".format(len(test_imagesID)))
 print("- Validation-set:\t{}".format(len(data.valid.labels)))
-
-'''def plot_images(images, cls_true, cls_pred=None):
-    assert len(images) == len(cls_true) == 9
-    
-    # Create figure with 3x3 sub-plots.
-    fig, axes = plt.subplots(3, 3)
-    fig.subplots_adjust(hspace=0.3, wspace=0.3)
-
-    for i, ax in enumerate(axes.flat):
-        # Plot image.
-        ax.imshow(images[i].reshape(img_shape))
-
-        # Show true and predicted classes.
-        if cls_pred is None:
-            xlabel = "True: {0}".format(cls_true[i])
-        else:
-            xlabel = "True: {0}, Pred: {1}".format(cls_true[i], cls_pred[i])
-
-        # Show the classes as the label on the x-axis.
-        ax.set_xlabel(xlabel)
-        
-        # Remove ticks from the plot.
-        ax.set_xticks([])
-        ax.set_yticks([])
-    
-    # Ensure the plot is shown correctly with multiple plots
-    # in a single Notebook cell.
-    plt.show()
-    
-#images = data.train.images[0:9]
-print(data.train.cls[0:2])
-# Get the true classes for those images.
-#cls_true = data.train.cls[0:9]
-
-# Plot the images and labels using our helper-function above.
-#plot_images(images=images, cls_true=cls_true)
-'''
-#def plot_images(images, cls_true, cls_pred=None):
-    
 
 
 def new_weights(shape):
@@ -343,13 +304,15 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 session=tf.Session()
 session.run(tf.global_variables_initializer()) # for newer versions
 ##session.run(tf.initialize_all_variables())  # for older versions
-train_batch_size = batch_size#16
+
+train_batch_size = batch_size
 
 num_iterations=30556
 #write to excel
 #sheet.write(row,col,content)
 #row and column start from 0
 write_to_xl=True
+
 if write_to_xl:
     workbook=xlwt.Workbook(encoding="utf-8")
     sheet1=workbook.add_sheet("Sheet1")
@@ -358,7 +321,6 @@ if write_to_xl:
     sheet1.write(0,1,time.strftime("%H:%M:%S"))
     sheet1.write(1,0,"Batch Size")
     sheet1.write(1,1,batch_size)
-    
     
     sheet1.write(3,0,"Architecture")
     #filter1 size and num
@@ -463,66 +425,12 @@ def optimize(num_iterations,
         saver = tf.train.Saver()
         saver.save(session, 'D:\\Object Detection Hands\\123')
         print('Saved')
-        
-'''test_batch_size=256
-def print_test_accuracy():
 
-    # Number of images in the test-set.
-    num_test = len(test_imagesID)
-
-    # Allocate an array for the predicted classes which
-    # will be calculated in batches and filled into this array.
-    cls_pred = np.zeros(shape=num_test, dtype=np.int)
-
-    # Now calculate the predicted classes for the batches.
-    # We will just iterate through all the batches.
-    # There might be a more clever and Pythonic way of doing this.
-
-    # The starting index for the next batch is denoted i.
-    i = 0
-
-    while i < num_test:
-        # The ending index for the next batch is denoted j.
-        j = min(i + test_batch_size, num_test)
-
-        # Get the images from the test-set between index i and j.
-        images = data.test.images[i:j, :]
-
-        # Get the associated labels.
-        labels = data.test.labels[i:j, :]
-
-        # Create a feed-dict with these images and labels.
-        feed_dict = {x: images,
-                     y_true: labels}
-
-        # Calculate the predicted class using TensorFlow.
-        cls_pred[i:j] = session.run(y_pred_cls, feed_dict=feed_dict)
-
-        # Set the start-index for the next batch to the
-        # end-index of the current batch.
-        i = j
-
-    # Convenience variable for the true class-numbers of the test-set.
-    cls_true = data.test.cls
-
-    # Create a boolean array whether each image is correctly classified.
-    correct = (cls_true == cls_pred)
-
-    # Calculate the number of correctly classified images.
-    # When summing a boolean array, False means 0 and True means 1.
-    correct_sum = correct.sum()
-
-    # Classification accuracy is the number of correctly classified
-    # images divided by the total number of images in the test-set.
-    acc = float(correct_sum) / num_test
-
-    # Print the accuracy.
-    msg = "Accuracy on Test-Set: {0:.1%} ({1} / {2})"
-    print(msg.format(acc, correct_sum, num_test))'''
 
 
 optimize(num_iterations)
 # print_validation_accuracy()
+
 if write_to_xl:
     workbook.save("pythonxl%s.xls"%(time.strftime("%d%m%Y")))
     print("Excel created")
