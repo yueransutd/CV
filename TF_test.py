@@ -11,14 +11,6 @@ import random
 import os
 import xlwt,xlrd
 
-# This code was modified from a tutorial
-# http://cv-tricks.com/tensorflow-tutorial/training-convolutional-neural-network-for-image-classification/
-
-# Not many elements were changed, apart from:
-# - the number of convolutional layers (many layers were added)
-# - At first, every 128*128 images were stored in an array, one for the training pictures and one for the testing pictures.
-# This does not work with large amounts of images, and with images larger than 128*128. Now, only the batch of images fed to the CNN is stored in an array.
-
 # Convolutional Layer 1.
 filter_size1 = 5
 num_filters1 = 16
