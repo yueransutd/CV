@@ -20,11 +20,11 @@ filter_size2 = 5
 num_filters2 = 32
 
 # Convolutional Layer 3.
-#filter_size3 = 3
-#num_filters3 = 32
-#
-#filter_size4 = 3
-#num_filters4 = 32
+filter_size3 = 3
+num_filters3 = 32
+# Convolutional Layer 4.
+filter_size4 = 3
+num_filters4 = 32
 #
 #filter_size41 = 3
 #num_filters41 = 32
@@ -36,30 +36,45 @@ num_filters2 = 32
 #num_filters5 = 64
 
 
+# image dimensions (only squares for now)
+img_size = 128
+# batch size
+batch_size = 2048                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 # Fully-connected layer.
 fc_size = 128  # Number of neurons in fully-connected layer.
 
-# Number of color channels for the images: 1 channel for gray-scale.
-num_channels = 3
-
-# image dimensions (only squares for now)
-img_size = 128
-# Size of image when flattened to a single dimension
-img_size_flat = img_size * img_size * num_channels
+# Number of iterations
+num_iterations=100
 
 # Tuple with height and width of images used to reshape arrays.
 img_shape = (img_size, img_size)
 
-# class info
-folderName = "D:\Object Detection Hands\\ToolsSD\\training_data"
+# Set learning rate here
+learning_rate=1e-3
+
+# Whether save this session
+save_session=True
+saveSessionPath='D:\\Object Detection Hands\\try'
+
+
+folderName = "D:\Object Detection Hands\\Toolss\\training_data"
 
 classes = [n for n in os.listdir(folderName)]
 
+train_path = 'Toolss\\training_data'
+test_path = 'Toolss\\testing_data'
+
+
+# Number of color channels for the images: 1 channel for gray-scale.
+num_channels = 3
+
+# Size of image when flattened to a single dimension
+img_size_flat = img_size * img_size * num_channels
+
+
+
 #classes = ['bluescissors', 'pinceVerte', 'redscissors',"screwdriverRed"]
 num_classes = len(classes)
-
-# batch size
-batch_size = 64
 
 # validation split
 validation_size = 0.2
@@ -67,8 +82,6 @@ validation_size = 0.2
 # how long to wait after validation loss stops improving before terminating training
 early_stopping = None  # use None if you don't want to implement early stoping
 
-train_path = 'ToolsSD\\training_data'
-test_path = 'ToolsSD\\testing_data'
 
 data = dataset2.read_train_sets(train_path, img_size, classes, validation_size=validation_size) # data
 test_imagesID, test_ids = dataset2.read_test_set(test_path, img_size, classes)
@@ -78,6 +91,45 @@ print("Size of:")
 print("- Training-set:\t\t{}".format(len(data.train.labels)))
 print("- Test-set:\t\t{}".format(len(test_imagesID)))
 print("- Validation-set:\t{}".format(len(data.valid.labels)))
+
+'''def plot_images(images, cls_true, cls_pred=None):
+    assert len(images) == len(cls_true) == 9
+    
+    # Create figure with 3x3 sub-plots.
+    fig, axes = plt.subplots(3, 3)
+    fig.subplots_adjust(hspace=0.3, wspace=0.3)
+
+    for i, ax in enumerate(axes.flat):
+        # Plot image.
+        ax.imshow(images[i].reshape(img_shape))
+
+        # Show true and predicted classes.
+        if cls_pred is None:
+            xlabel = "True: {0}".format(cls_true[i])
+        else:
+            xlabel = "True: {0}, Pred: {1}".format(cls_true[i], cls_pred[i])
+
+        # Show the classes as the label on the x-axis.
+        ax.set_xlabel(xlabel)
+        
+        # Remove ticks from the plot.
+        ax.set_xticks([])
+        ax.set_yticks([])
+    
+    # Ensure the plot is shown correctly with multiple plots
+    # in a single Notebook cell.
+    plt.show()
+    
+#images = data.train.images[0:9]
+print(data.train.cls[0:2])
+# Get the true classes for those images.
+#cls_true = data.train.cls[0:9]
+
+# Plot the images and labels using our helper-function above.
+#plot_images(images=images, cls_true=cls_true)
+'''
+#def plot_images(images, cls_true, cls_pred=None):
+    
 
 
 def new_weights(shape):
@@ -212,8 +264,22 @@ layer_conv2, weights_conv2 = \
                    filter_size=filter_size2,
                    num_filters=num_filters2,
                    use_pooling=True)
+
+layer_conv3, weights_conv3 = \
+    new_conv_layer(input=layer_conv2,
+                   num_input_channels=num_filters2,
+                   filter_size=filter_size3,
+                   num_filters=num_filters3,
+                   use_pooling=True)
+#
+layer_conv4, weights_conv4 = \
+    new_conv_layer(input=layer_conv3,
+                   num_input_channels=num_filters3,
+                   filter_size=filter_size4,
+                   num_filters=num_filters4,
+                   use_pooling=True)
     
-layer_flat, num_features = flatten_layer(layer_conv2)
+layer_flat, num_features = flatten_layer(layer_conv4)
 
 layer_fc1 = new_fc_layer(input=layer_flat,
                          num_inputs=num_features,
@@ -228,20 +294,8 @@ layer_fc2 = new_fc_layer(input=layer_fc1,
 # print("now layer3 input")
 # print(layer_conv2.get_shape())
 #print (layer_conv2)
-#layer_conv3, weights_conv3 = \
-#    new_conv_layer(input=layer_conv2,
-#                   num_input_channels=num_filters2,
-#                   filter_size=filter_size3,
-#                   num_filters=num_filters3,
-#                   use_pooling=True)
-#
-#layer_conv4, weights_conv4 = \
-#    new_conv_layer(input=layer_conv3,
-#                   num_input_channels=num_filters3,
-#                   filter_size=filter_size4,
-#                   num_filters=num_filters4,
-#                   use_pooling=True)
-#
+
+
 #layer_conv41, weights_conv41 = \
 #    new_conv_layer(input=layer_conv4,
 #                   num_input_channels=num_filters41,
@@ -288,22 +342,20 @@ cost = tf.reduce_mean(cross_entropy)
 
 
 
-optimizer = tf.train.AdamOptimizer(learning_rate=1e-4).minimize(cost)
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 correct_prediction = tf.equal(y_pred_cls, y_true_cls)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 #
 session=tf.Session()
 session.run(tf.global_variables_initializer()) # for newer versions
 ##session.run(tf.initialize_all_variables())  # for older versions
-
 train_batch_size = batch_size
 
-num_iterations=30556
+
 #write to excel
 #sheet.write(row,col,content)
 #row and column start from 0
 write_to_xl=True
-
 if write_to_xl:
     workbook=xlwt.Workbook(encoding="utf-8")
     sheet1=workbook.add_sheet("Sheet1")
@@ -312,6 +364,7 @@ if write_to_xl:
     sheet1.write(0,1,time.strftime("%H:%M:%S"))
     sheet1.write(1,0,"Batch Size")
     sheet1.write(1,1,batch_size)
+    
     
     sheet1.write(3,0,"Architecture")
     #filter1 size and num
@@ -363,7 +416,7 @@ def show_time(time_in_seconds):
 total_iterations = 0
 
 def optimize(num_iterations,
-             save_session=True):
+             save_session=save_session):
     # Ensure we update the global variable rather than a local copy.
     global total_iterations
 
@@ -372,9 +425,9 @@ def optimize(num_iterations,
     start = time.time()
     for i in range(total_iterations,
                    total_iterations + num_iterations):
-        # create log writer object
+        
 
-
+        print(i)
 
         # Get a batch of training examples.
         # x_batch now holds a batch of images and
@@ -403,25 +456,79 @@ def optimize(num_iterations,
 
         # Print status at end of each epoch (defined as full pass through training dataset).
         #if i % int(data.train.num_examples / batch_size) == 0:
-        if i % int( batch_size) == 0:
+        if i % int( len(data.train.labels)/batch_size) == 0:
             val_loss = session.run(cost, feed_dict=feed_dict_validate)
-            epoch = int(i / batch_size)
+            epoch = int(i /int( len(data.train.labels)/batch_size))
 
             print_progress(epoch, feed_dict_train, feed_dict_validate, val_loss,sheet1,write_to_xl)
             show_time(time.time()-start)
-        
+    total_iterations += num_iterations    
     if save_session:
     # Update the total number of iterations performed.
-        total_iterations += num_iterations
+        
         saver = tf.train.Saver()
-        saver.save(session, 'D:\\Object Detection Hands\\123')
+        saver.save(session, saveSessionPath)
         print('Saved')
+        
+'''test_batch_size=256
+def print_test_accuracy():
 
+    # Number of images in the test-set.
+    num_test = len(test_imagesID)
+
+    # Allocate an array for the predicted classes which
+    # will be calculated in batches and filled into this array.
+    cls_pred = np.zeros(shape=num_test, dtype=np.int)
+
+    # Now calculate the predicted classes for the batches.
+    # We will just iterate through all the batches.
+    # There might be a more clever and Pythonic way of doing this.
+
+    # The starting index for the next batch is denoted i.
+    i = 0
+
+    while i < num_test:
+        # The ending index for the next batch is denoted j.
+        j = min(i + test_batch_size, num_test)
+
+        # Get the images from the test-set between index i and j.
+        images = data.test.images[i:j, :]
+
+        # Get the associated labels.
+        labels = data.test.labels[i:j, :]
+
+        # Create a feed-dict with these images and labels.
+        feed_dict = {x: images,
+                     y_true: labels}
+
+        # Calculate the predicted class using TensorFlow.
+        cls_pred[i:j] = session.run(y_pred_cls, feed_dict=feed_dict)
+
+        # Set the start-index for the next batch to the
+        # end-index of the current batch.
+        i = j
+
+    # Convenience variable for the true class-numbers of the test-set.
+    cls_true = data.test.cls
+
+    # Create a boolean array whether each image is correctly classified.
+    correct = (cls_true == cls_pred)
+
+    # Calculate the number of correctly classified images.
+    # When summing a boolean array, False means 0 and True means 1.
+    correct_sum = correct.sum()
+
+    # Classification accuracy is the number of correctly classified
+    # images divided by the total number of images in the test-set.
+    acc = float(correct_sum) / num_test
+
+    # Print the accuracy.
+    msg = "Accuracy on Test-Set: {0:.1%} ({1} / {2})"
+    print(msg.format(acc, correct_sum, num_test))'''
 
 
 optimize(num_iterations)
 # print_validation_accuracy()
-
 if write_to_xl:
-    workbook.save("pythonxl%s.xls"%(time.strftime("%d%m%Y")))
+    workbook.save("pythonxl%sss.xls"%(time.strftime("%d%m%Y")))
     print("Excel created")
